@@ -36,6 +36,7 @@ declare type CreateListingParams = {
     address: string;
     photo: string;
     needsRepair: boolean;
+    resolved?: boolean;
     notes?: string;
     tags?: string[];
 };
@@ -48,6 +49,7 @@ declare type Listing = {
     address: string;
     photo: string;
     needsRepair: boolean;
+    resolved: boolean;
     notes?: string;
     tags?: string[];
     createdAt?: string;

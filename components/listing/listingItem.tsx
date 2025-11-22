@@ -9,7 +9,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar, Wrench } from "lucide-react";
+import { MapPin, Calendar, Wrench, CheckCircle, Clock } from "lucide-react";
 
 interface ListingItemProps {
     listing: Listing;
@@ -37,19 +37,34 @@ export function ListingItem({ listing }: ListingItemProps) {
 
                 {/* Content */}
                 <CardHeader>
-                    <div className="flex items-start justify-between">
+                    <div className="flex items-start justify-between gap-2">
                         <CardTitle className="text-xl">{listing.title}</CardTitle>
-                        {listing.needsRepair && (
-                            <Badge variant="destructive" className="flex items-center gap-1">
-                                <Wrench className="h-3 w-3" />
-                                Needs Repair
-                            </Badge>
-                        )}
-                        {!listing.needsRepair && (
-                            <Badge variant="default" className="bg-green-500 hover:bg-green-600">
-                                Working
-                            </Badge>
-                        )}
+                        <div className="flex flex-col gap-2 items-end">
+                            {/* Resolved Status Badge */}
+                            {listing.resolved ? (
+                                <Badge variant="default" className="bg-blue-500 hover:bg-blue-600 flex items-center gap-1">
+                                    <CheckCircle className="h-3 w-3" />
+                                    Resolved
+                                </Badge>
+                            ) : (
+                                <Badge variant="default" className="bg-orange-500 hover:bg-orange-600 flex items-center gap-1">
+                                    <Clock className="h-3 w-3" />
+                                    Active
+                                </Badge>
+                            )}
+
+                            {/* Condition Badge */}
+                            {listing.needsRepair ? (
+                                <Badge variant="destructive" className="flex items-center gap-1">
+                                    <Wrench className="h-3 w-3" />
+                                    Needs Repair
+                                </Badge>
+                            ) : (
+                                <Badge variant="default" className="bg-green-500 hover:bg-green-600">
+                                    Working
+                                </Badge>
+                            )}
+                        </div>
                     </div>
                     <CardDescription className="line-clamp-2">
                         {listing.description}

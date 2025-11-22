@@ -10,6 +10,7 @@ const ListingSchema = new Schema({
     needsRepair: { type: Boolean, required: true },
     notes: { type: String, required: false },
     tags: { type: [String], required: false },
+    resolved: { type: Boolean, required: true, default: false },
 
 }, {
     timestamps: true

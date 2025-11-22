@@ -3,14 +3,14 @@ const navItems = [
         label: "Home",
         href: "/",
     },
-    {
-        label: "About",
-        href: "/about",
-    },
-    {
-        label: "Contact",
-        href: "/contact",
-    },
+    // {
+    //     label: "About",
+    //     href: "/about",
+    // },
+    // {
+    //     label: "Contact",
+    //     href: "/contact",
+    // },
     {
         label: "Dashboard",
         href: "/dashboard",

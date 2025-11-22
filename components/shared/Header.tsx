@@ -13,14 +13,22 @@ export default function Header() {
             <div>
                 <h1>EWASTE</h1>
             </div>
-            <div className="flex gap-15">
+            {/* <div className="flex gap-15">
                 {navItems.map((item) => (
                     <Link key={item.href} href={item.href}>
                         {item.label}
                     </Link>
                 ))}
-            </div>
-            <div>
+            </div> */}
+            <div className="flex gap-20">
+                <div className="flex gap-15">
+                    {navItems.map((item) => (
+                        <Link key={item.href} href={item.href}>
+                            {item.label}
+                        </Link>
+                    ))}
+                </div>
+
                 <SignedOut>
                     <div className="flex gap-2">
                         <Button asChild size="sm">

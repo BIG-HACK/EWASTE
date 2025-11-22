@@ -39,6 +39,7 @@ export function EditListingForm({ listing, onSuccess }: EditListingFormProps) {
         address: listing.address,
         photo: listing.photo,
         needsRepair: listing.needsRepair,
+        resolved: listing.resolved,
         notes: listing.notes || "",
         tags: listing.tags?.join(", ") || "",
     });
@@ -124,6 +125,7 @@ export function EditListingForm({ listing, onSuccess }: EditListingFormProps) {
                 address: formData.address,
                 photo: formData.photo,
                 needsRepair: formData.needsRepair,
+                resolved: formData.resolved,
                 notes: formData.notes || undefined,
                 tags: formData.tags ? formData.tags.split(",").map(tag => tag.trim()).filter(Boolean) : undefined,
             };
@@ -248,6 +250,26 @@ export function EditListingForm({ listing, onSuccess }: EditListingFormProps) {
                             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
                             Item needs repair
+                        </Label>
+                    </div>
+
+                    {/* Resolved */}
+                    <div className="flex items-center space-x-2">
+                        <Checkbox
+                            id="resolved"
+                            checked={formData.resolved}
+                            onCheckedChange={(checked) =>
+                                setFormData({
+                                    ...formData,
+                                    resolved: checked as boolean,
+                                })
+                            }
+                        />
+                        <Label
+                            htmlFor="resolved"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                            Mark as resolved
                         </Label>
                     </div>
 

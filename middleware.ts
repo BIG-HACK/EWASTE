@@ -5,36 +5,37 @@ const isPublicRoute = createRouteMatcher([
     "/",
     "/sign-in(.*)",
     "/sign-up(.*)",
+    "/onboarding",
     "/api/webhook/clerk",
     // "/api/uploadthing"
 ]);
 
-const isOnboardingRoute = createRouteMatcher(["/onboarding"]);
-
 export default clerkMiddleware(async (auth, req) => {
-    const { userId, sessionClaims } = await auth();
+    const { userId, sessionClaims, redirectToSignIn } = await auth();
 
-    // Protect non-public routes
-    if (!isPublicRoute(req)) {
-        await auth.protect();
+    // If the user isn't signed in and the route is private, redirect to sign-in
+    if (!userId && !isPublicRoute(req)) {
+        return redirectToSignIn({ returnBackUrl: req.url });
     }
 
-    // If user is authenticated and has a userId but no userType, redirect to onboarding
-    if (userId && sessionClaims) {
-        const userType = (sessionClaims as any)?.metadata?.userType || (sessionClaims as any)?.publicMetadata?.userType;
-        const isOnOnboarding = isOnboardingRoute(req);
+    // Catch users who do not have userType set in their publicMetadata
+    // Redirect them to the /onboarding route to complete onboarding
+    const userType = (sessionClaims?.metadata as any)?.userType;
 
-        // If user doesn't have a userType and isn't already on onboarding, redirect
-        if (!userType && !isOnOnboarding && !isPublicRoute(req)) {
-            const onboardingUrl = new URL("/onboarding", req.url);
-            return NextResponse.redirect(onboardingUrl);
-        }
+    if (userId && !userType && req.nextUrl.pathname !== "/onboarding") {
+        const onboardingUrl = new URL("/onboarding", req.url);
+        return NextResponse.redirect(onboardingUrl);
+    }
 
-        // If user has userType and is on onboarding, redirect to home
-        if (userType && isOnOnboarding) {
-            const homeUrl = new URL("/", req.url);
-            return NextResponse.redirect(homeUrl);
-        }
+    // If user has completed onboarding and tries to access onboarding page, redirect to home
+    if (userId && userType && req.nextUrl.pathname === "/onboarding") {
+        const homeUrl = new URL("/", req.url);
+        return NextResponse.redirect(homeUrl);
+    }
+
+    // If the user is logged in and the route is protected, let them view
+    if (userId && !isPublicRoute(req)) {
+        return NextResponse.next();
     }
 });
 

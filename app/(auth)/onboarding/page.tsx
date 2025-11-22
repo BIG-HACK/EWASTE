@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 import { setUserType } from "@/lib/actions/user.actions";
 
 export default function OnboardingPage() {
     const [selectedType, setSelectedType] = useState<UserType | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
+    const { user } = useUser();
 
     const handleSubmit = async () => {
         if (!selectedType) return;
@@ -15,12 +17,12 @@ export default function OnboardingPage() {
         setIsLoading(true);
         try {
             await setUserType(selectedType);
+            await user?.reload();
             router.push("/"); // Redirect to home after completion
             router.refresh();
         } catch (error) {
             console.error("Error setting user type:", error);
             alert("Failed to set user type. Please try again.");
-        } finally {
             setIsLoading(false);
         }
     };

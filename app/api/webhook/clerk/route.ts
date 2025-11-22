@@ -1,13 +1,11 @@
 import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { WebhookEvent, clerkClient } from "@clerk/nextjs/server";
-import { createUser, updateUser, deleteUser } from "@/lib/actions/user.actions"
+import { createUser, updateUser, deleteUser } from "@/lib/actions/user.actions";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-    // You can find this in the Clerk Dashboard -> Webhooks -> choose the endpoint
     const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
-    console.log("CHECKPOINT1")
 
     if (!WEBHOOK_SECRET) {
         throw new Error(
@@ -51,24 +49,10 @@ export async function POST(req: Request) {
         });
     }
 
-    // Do something with the payload
-    // For this guide, you simply log the payload to the console
-    const { id } = evt.data;
     const eventType = evt.type;
 
-    console.log(`Webhook with and ID of ${id} and type of ${eventType}`);
-    console.log("Webhook body:", body);
-
     if (eventType === "user.created") {
-        console.log("NEED TO CREATE USER")
-        const {
-            id,
-            email_addresses,
-            image_url,
-            first_name,
-            last_name,
-            username,
-        } = evt.data;
+        const { id, email_addresses, image_url, first_name, last_name, username } = evt.data;
 
         const user = {
             clerkId: id,
@@ -77,27 +61,17 @@ export async function POST(req: Request) {
             firstName: first_name!,
             lastName: last_name!,
             photo: image_url,
-        };
-
-        console.log("user.created: ", user);
+        }
 
         const newUser = await createUser(user);
 
-        console.log("newUser back in webhook: ", newUser);
-
         if (newUser) {
-            console.log("updating user metadata");
-
             await (await clerkClient()).users.updateUserMetadata(id, {
                 publicMetadata: {
                     userId: newUser._id, // link the Clerk user to the user in mongodb
                 },
             });
-
-            console.log("user metadata updated");
         }
-
-        console.log("returning from user.created");
 
         return NextResponse.json({ message: "OK", user: newUser });
     }
@@ -120,11 +94,7 @@ export async function POST(req: Request) {
     if (eventType === "user.deleted") {
         const { id } = evt.data;
 
-        console.log("\n\n\n\n\n\n\n\n\n\nCAUGHT WEBHOOK\n\n\n\n\n\n\n\n\n\n")
-
         const deletedUser = await deleteUser(id!);
-
-        console.log("\n\n\n\n\n\n\n\n\n\nDELETED USER (WEBHOOK)\n\n\n\n\n\n\n\n\n\n")
 
         return NextResponse.json({ message: "OK", user: deletedUser });
     }

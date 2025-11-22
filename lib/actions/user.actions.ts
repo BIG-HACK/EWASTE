@@ -107,3 +107,18 @@ export async function setUserType(userType: UserType) {
         throw new Error("Failed to set user type");
     }
 }
+
+// const getCurrentUser = async () => {
+//     try {
+//         const { userId } = await auth();
+//         if (!userId) {
+//             throw new Error("Unauthorized");
+//         }
+//         return await getUserById(userId);
+//     } catch (error) {
+//         console.error("Error getting current user:", error);
+//         throw new Error("Failed to get current user");
+//     }
+// }
+
+// export { getCurrentUser };

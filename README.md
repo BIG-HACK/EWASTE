@@ -20,6 +20,35 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Environment Variables
+
+Create a `.env.local` file in the root directory with the following variables:
+
+```bash
+# Clerk Authentication
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+CLERK_SECRET_KEY=your_clerk_secret_key
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+
+# MongoDB
+MONGODB_URI=your_mongodb_connection_string
+
+# Cloudinary Image Upload
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
+NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=your_upload_preset
+```
+
+### Setting up Cloudinary for Image Uploads
+
+1. Sign up for a free account at [Cloudinary](https://cloudinary.com)
+2. Go to your dashboard and copy your **Cloud Name**
+3. Navigate to **Settings** > **Upload** > **Upload presets**
+4. Either use the default preset (`ml_default`) or create a new **unsigned** upload preset
+5. Add the Cloud Name and Upload Preset to your `.env.local` file
+
+The image upload feature uses Cloudinary to store user-uploaded images. Images are uploaded directly to Cloudinary, and the URLs are stored in MongoDB.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

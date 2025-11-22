@@ -9,7 +9,8 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar, Wrench, CheckCircle, Clock } from "lucide-react";
+import { MapPin, Calendar, Wrench, CheckCircle, Clock, Handshake } from "lucide-react";
+import { dummyOrganisations } from "@/constants";
 
 interface ListingItemProps {
     listing: Listing;
@@ -21,6 +22,8 @@ export function ListingItem({ listing }: ListingItemProps) {
         month: "short",
         day: "numeric",
     });
+
+    const matchedOrg = dummyOrganisations.find(org => org._id === listing.matchedOrganisationId || org.clerkId === listing.matchedOrganisationId);
 
     return (
         <Link href={`/dashboard/listing/${listing._id}`}>
@@ -40,7 +43,15 @@ export function ListingItem({ listing }: ListingItemProps) {
                     <div className="flex items-start justify-between gap-2">
                         <CardTitle className="text-xl">{listing.title}</CardTitle>
                         <div className="flex flex-col gap-2 items-end">
-                            {/* Resolved Status Badge */}
+                            {/* Matched Status Badge */}
+                            {matchedOrg && (
+                                <Badge variant="default" className="bg-emerald-600 hover:bg-emerald-700 flex items-center gap-1">
+                                    <Handshake className="h-3 w-3" />
+                                    Matched: {matchedOrg.name}
+                                </Badge>
+                            )}
+
+                            {/* Status Badge */}
                             {listing.resolved ? (
                                 <Badge variant="default" className="bg-blue-500 hover:bg-blue-600 flex items-center gap-1">
                                     <CheckCircle className="h-3 w-3" />

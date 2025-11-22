@@ -6,6 +6,7 @@ import { UserButton } from "@clerk/nextjs";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@clerk/nextjs";
+import Image from "next/image";
 
 
 export default function Header() {
@@ -18,9 +19,16 @@ export default function Header() {
     const navItems = userType === "organisation" ? navItemsOrganisation : navItemsDonor;
 
     return (
-        <div className="flex justify-between items-center p-4 px-20">
-            <div>
-                <h1>EWASTE</h1>
+        <div className="flex justify-between items-center  px-36">
+            <div className="flex items-center flex-row justify-center -ml-10">
+                <Image
+                    src="/logo.png"
+                    alt="SecondSpark"
+                    width={120}
+                    height={120}
+                    className="object-contain mix-blend-multiply"
+                />
+                <h1 className="text-xl font-bold -ml-8">SecondSpark</h1>
             </div>
 
             <div className="flex gap-20">

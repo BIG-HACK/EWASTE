@@ -22,7 +22,7 @@ export function OrganisationCard({ organisation }: OrganisationCardProps) {
         : `https://${organisation.website}`;
 
     return (
-        <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+        <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 hover:border-primary/50">
             {/* Logo */}
             <div className="relative h-56 w-full bg-white border-b">
                 <Image

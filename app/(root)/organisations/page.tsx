@@ -1,8 +1,10 @@
 import { getAllOrganisationProfiles } from "@/lib/actions/organisationprofile.actions";
 import { OrganisationCard } from "@/components/organisation/OrganisationCard";
+import { dummyOrganisations } from "@/constants";
 
 export default async function OrganisationsPage() {
-    const organisations = await getAllOrganisationProfiles();
+    // const organisations = await getAllOrganisationProfiles();
+    const organisations = dummyOrganisations;
 
     return (
         <div className="container mx-auto px-4 py-8">

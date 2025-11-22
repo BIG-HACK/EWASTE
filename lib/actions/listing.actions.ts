@@ -74,3 +74,27 @@ export async function updateListing(listingId: string, listing: Partial<CreateLi
         throw new Error("Failed to update listing");
     }
 }
+
+export async function matchListingWithOrganisation(listingId: string, organisationClerkId: string) {
+    try {
+        await connectToDatabase();
+
+        const updatedListing = await Listing.findByIdAndUpdate(
+            listingId,
+            { matchedOrganisationId: organisationClerkId },
+            { new: true }
+        );
+
+        if (!updatedListing) {
+            throw new Error("Listing not found");
+        }
+
+        revalidatePath("/dashboard");
+        revalidatePath("/");
+
+        return JSON.parse(JSON.stringify(updatedListing));
+    } catch (error) {
+        console.error("Error matching listing:", error);
+        throw new Error("Failed to match listing");
+    }
+}

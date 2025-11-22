@@ -55,3 +55,32 @@ declare type Listing = {
     createdAt?: string;
     updatedAt?: string;
 };
+
+declare type CreateOrganisationProfileParams = {
+    clerkId: string;
+    name: string;
+    address: string;
+    phone: string;
+    email: string;
+    website: string;
+    logo: string;
+    description: string;
+    needs?: string[];
+    tags?: string[];
+};
+
+declare type OrganisationProfile = {
+    _id: string;
+    clerkId: string;
+    name: string;
+    address: string;
+    phone: string;
+    email: string;
+    website: string;
+    logo: string;
+    description: string;
+    needs?: string[];
+    tags?: string[];
+    createdAt?: string;
+    updatedAt?: string;
+};

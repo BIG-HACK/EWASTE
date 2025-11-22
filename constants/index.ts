@@ -1,4 +1,4 @@
-const navItems = [
+const navItemsDonor = [
     {
         label: "Home",
         href: "/",
@@ -21,4 +21,23 @@ const navItems = [
     }
 ];
 
-export { navItems };
+const navItemsOrganisation = [
+    {
+        label: "Home",
+        href: "/",
+    },
+    {
+        label: "Organisation Profile",
+        href: "/organisation-profile",
+    },
+    {
+        label: "Dashboard",
+        href: "/dashboard",
+    },
+    {
+        label: "Organisations",
+        href: "/organisations",
+    }
+];
+
+export { navItemsDonor, navItemsOrganisation };

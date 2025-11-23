@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
-import { createListing, matchListingWithOrganisation } from "@/lib/actions/listing.actions";
+import { createListing, matchListingWithOrganisation, updateListing } from "@/lib/actions/listing.actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,7 +16,15 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Upload, X, MapPin, Type, Tag, FileText, Wrench, Info, CheckCircle2, ArrowRight } from "lucide-react";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { Upload, X, MapPin, Type, Tag, FileText, Wrench, Info, CheckCircle2, ArrowRight, Loader2 } from "lucide-react";
 import { getRecommendedOrganisations } from "@/lib/actions/recommendation.actions";
 import { OrganisationCard } from "@/components/organisation/OrganisationCard";
 
@@ -31,6 +39,12 @@ export function CreateListingForm() {
     const [isLoading, setIsLoading] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [matchingOrgId, setMatchingOrgId] = useState<string | null>(null);
+
+    // Match Dialog State
+    const [showMatchDialog, setShowMatchDialog] = useState(false);
+    const [matchStep, setMatchStep] = useState<'loading' | 'success'>('loading');
+    const [volunteerNotes, setVolunteerNotes] = useState("");
+
     const [recommendations, setRecommendations] = useState<OrganisationProfile[]>([]);
     const [showRecommendations, setShowRecommendations] = useState(false);
     const [createdListingId, setCreatedListingId] = useState<string | null>(null);
@@ -167,21 +181,43 @@ export function CreateListingForm() {
         });
     };
 
-    const handleMatch = async (orgClerkId: string) => {
+    const handleMatch = async (orgId: string) => {
         if (!createdListingId) return;
 
-        setIsLoading(true);
-        try {
-            await matchListingWithOrganisation(createdListingId, orgClerkId);
-            // Maybe show a success toast or just redirect
-            router.push("/dashboard");
-            router.refresh();
-        } catch (error) {
-            console.error("Error matching:", error);
-            alert("Failed to match. Please try again.");
-        } finally {
-            setIsLoading(false);
+        setMatchingOrgId(orgId);
+        setShowMatchDialog(true);
+        setMatchStep('loading');
+
+        // Wait 2 seconds then match
+        setTimeout(async () => {
+            try {
+                await matchListingWithOrganisation(createdListingId, orgId);
+                setMatchStep('success');
+            } catch (error) {
+                console.error("Error matching:", error);
+                alert("Failed to match. Please try again.");
+                setShowMatchDialog(false);
+            } finally {
+                setMatchingOrgId(null);
+            }
+        }, 2000);
+    };
+
+    const handleFinishMatch = async () => {
+        if (volunteerNotes && createdListingId) {
+            try {
+                // Append volunteer notes to existing notes
+                const updatedNotes = formData.notes
+                    ? `${formData.notes}\n\n[Volunteer Notes]: ${volunteerNotes}`
+                    : `[Volunteer Notes]: ${volunteerNotes}`;
+
+                await updateListing(createdListingId, { notes: updatedNotes });
+            } catch (e) {
+                console.error("Error saving notes", e);
+            }
         }
+        router.push("/dashboard");
+        router.refresh();
     };
 
     if (showRecommendations) {
@@ -225,6 +261,50 @@ export function CreateListingForm() {
                         <ArrowRight className="ml-2 w-5 h-5" />
                     </Button>
                 </div>
+
+                <Dialog open={showMatchDialog} onOpenChange={(open) => !open && matchStep === 'success' && handleFinishMatch()}>
+                    <DialogContent className="sm:max-w-md">
+                        {matchStep === 'loading' ? (
+                            <div className="flex flex-col items-center justify-center py-10 space-y-4">
+                                <DialogHeader>
+                                    <DialogTitle className="text-center text-xl font-semibold text-emerald-600">Finding a Volunteer</DialogTitle>
+                                </DialogHeader>
+                                <Loader2 className="h-12 w-12 animate-spin text-emerald-600" />
+                                <p className="text-lg font-medium text-gray-600">Please wait a moment...</p>
+                            </div>
+                        ) : (
+                            <>
+                                <DialogHeader>
+                                    <DialogTitle className="text-2xl font-bold text-center text-emerald-600">Match Successful! </DialogTitle>
+                                    <DialogDescription className="text-center text-lg pt-2">
+                                        We&apos;ve matched you with a volunteer who will come and collect your items within 3 days.
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <div className="py-4 space-y-4">
+                                    <Label htmlFor="volunteerNotes" className="text-base font-semibold">
+                                        Do you have any notes for the volunteer?
+                                    </Label>
+                                    <Textarea
+                                        id="volunteerNotes"
+                                        placeholder="e.g., Please call when you arrive, or best time is after 5pm."
+                                        value={volunteerNotes}
+                                        onChange={(e) => setVolunteerNotes(e.target.value)}
+                                        className="min-h-[100px]"
+                                    />
+                                </div>
+                                <DialogFooter className="sm:justify-center">
+                                    <Button
+                                        type="button"
+                                        className="w-72 sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-lg px-8 py-6 rounded-full "
+                                        onClick={handleFinishMatch}
+                                    >
+                                        Confirm & Finish
+                                    </Button>
+                                </DialogFooter>
+                            </>
+                        )}
+                    </DialogContent>
+                </Dialog>
             </div>
         );
     }

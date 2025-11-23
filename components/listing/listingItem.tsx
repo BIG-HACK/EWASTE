@@ -11,12 +11,14 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Calendar, Wrench, CheckCircle, Clock, Handshake } from "lucide-react";
 import { dummyOrganisations } from "@/constants";
+import { cn } from "@/lib/utils";
 
 interface ListingItemProps {
     listing: Listing;
+    onCardClick?: (listing: Listing) => void;
 }
 
-export function ListingItem({ listing }: ListingItemProps) {
+export function ListingItem({ listing, onCardClick }: ListingItemProps) {
     const formattedDate = new Date(listing.createdAt || "").toLocaleDateString("en-US", {
         year: "numeric",
         month: "short",
@@ -25,9 +27,24 @@ export function ListingItem({ listing }: ListingItemProps) {
 
     const matchedOrg = dummyOrganisations.find(org => org._id === listing.matchedOrganisationId || org.clerkId === listing.matchedOrganisationId);
 
+    const Wrapper = ({ children }: { children: React.ReactNode }) => {
+        if (onCardClick) {
+            return <div onClick={() => onCardClick(listing)}>{children}</div>;
+        }
+        return <Link href={`/dashboard/listing/${listing._id}`}>{children}</Link>;
+    };
+
     return (
-        <Link href={`/dashboard/listing/${listing._id}`}>
-            <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+        <Wrapper>
+            <Card className={cn(
+                "overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer h-full relative group",
+                listing.resolved && "bg-emerald-50/40 border-emerald-200 shadow-emerald-100"
+            )}>
+                {/* Resolved Overlay */}
+                {listing.resolved && (
+                    <div className="absolute inset-0 bg-emerald-500/5 pointer-events-none z-10" />
+                )}
+
                 {/* Image */}
                 <div className="relative h-48 w-full bg-gray-200">
                     <Image
@@ -116,7 +133,7 @@ export function ListingItem({ listing }: ListingItemProps) {
                     Listed on {formattedDate}
                 </CardFooter>
             </Card>
-        </Link>
+        </Wrapper>
     );
 }
 

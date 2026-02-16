@@ -1,6 +1,6 @@
 "use client"
 
-import { navItemsDonor, navItemsOrganisation } from "@/constants";
+import { navItemsDonor, navItemsOrganisation, navItemsVolunteer } from "@/constants";
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
@@ -17,7 +17,12 @@ export default function Header() {
     const userType = user?.publicMetadata?.userType as UserType | undefined;
 
     // Determine which nav items to show
-    const navItems = userType === "organisation" ? navItemsOrganisation : navItemsDonor;
+    const navItems =
+        userType === "organisation"
+            ? navItemsOrganisation
+            : userType === "volunteer"
+              ? navItemsVolunteer
+              : navItemsDonor;
 
     return (
         <div className="flex justify-between items-center px-30 py-4">

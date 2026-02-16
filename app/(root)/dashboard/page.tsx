@@ -1,13 +1,17 @@
 import { UserListings } from "@/components/listing/userListings";
 import { OrganisationMatches } from "@/components/organisation/OrganisationMatches";
+import { VolunteerDashboard } from "@/components/volunteer/VolunteerDashboard";
 import { currentUser } from "@clerk/nextjs/server";
 
 export default async function Dashboard() {
     const user = await currentUser();
     const userType = user?.publicMetadata?.userType as string | undefined;
 
-    if (userType === 'organisation') {
+    if (userType === "organisation") {
         return <OrganisationMatches />;
+    }
+    if (userType === "volunteer") {
+        return <VolunteerDashboard />;
     }
 
     return <UserListings />;

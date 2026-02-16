@@ -12,6 +12,7 @@ const ListingSchema = new Schema({
     tags: { type: [String], required: false },
     resolved: { type: Boolean, required: true, default: false },
     matchedOrganisationId: { type: String, required: false },
+    assignedVolunteerId: { type: String, required: false },
 
 }, {
     timestamps: true

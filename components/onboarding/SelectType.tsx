@@ -28,7 +28,11 @@ export function SelectType() {
         try {
             await setUserType(selectedType);
             await user?.reload();
-            router.push("/");
+            if (selectedType === "volunteer") {
+                router.push("/volunteer/apply");
+            } else {
+                router.push("/");
+            }
             router.refresh();
         } catch (error) {
             console.error("Error setting user type:", error);
@@ -104,6 +108,34 @@ export function SelectType() {
                                     <CardDescription>
                                         I represent an organization collecting and processing
                                         e-waste
+                                    </CardDescription>
+                                </CardContent>
+                            </Card>
+                        </Label>
+
+                        {/* Volunteer Card */}
+                        <Label
+                            htmlFor="volunteer"
+                            className="cursor-pointer md:col-span-2"
+                        >
+                            <Card
+                                className={`relative transition-all duration-200 hover:shadow-lg ${selectedType === "volunteer"
+                                    ? "border-amber-500 bg-amber-50 dark:bg-amber-900/20 shadow-lg"
+                                    : "hover:border-amber-300"
+                                    }`}
+                            >
+                                <CardContent className="p-6">
+                                    <RadioGroupItem
+                                        value="volunteer"
+                                        id="volunteer"
+                                        className="absolute top-4 right-4"
+                                    />
+                                    <div className="text-4xl mb-4">🙌</div>
+                                    <CardTitle className="text-2xl mb-2">
+                                        Volunteer
+                                    </CardTitle>
+                                    <CardDescription>
+                                        I want to help pick up e-waste from donors and deliver to organisations
                                     </CardDescription>
                                 </CardContent>
                             </Card>

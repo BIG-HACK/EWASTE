@@ -37,6 +37,9 @@ MONGODB_URI=your_mongodb_connection_string
 # Cloudinary Image Upload
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
 NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=your_upload_preset
+
+# Optional: set to "true" to auto-approve volunteer applications (for development)
+# AUTO_APPROVE_VOLUNTEERS=true
 ```
 
 ### Setting up Cloudinary for Image Uploads

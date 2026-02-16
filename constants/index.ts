@@ -44,6 +44,29 @@ const navItemsOrganisation = [
     }
 ];
 
+const navItemsVolunteer = [
+    {
+        label: "Home",
+        href: "/",
+    },
+    {
+        label: "Dashboard",
+        href: "/dashboard",
+    },
+    {
+        label: "Apply",
+        href: "/volunteer/apply",
+    },
+    {
+        label: "Browse Listings",
+        href: "/volunteer/listings",
+    },
+    {
+        label: "Portfolio",
+        href: "/volunteer/portfolio",
+    },
+];
+
 const dummyOrganisations: OrganisationProfile[] = [
     {
         _id: "org_1",
@@ -283,4 +306,4 @@ const dummyMatches: Listing[] = [
     }
 ];
 
-export { navItemsDonor, navItemsOrganisation, dummyOrganisations, dummyMatches };
+export { navItemsDonor, navItemsOrganisation, navItemsVolunteer, dummyOrganisations, dummyMatches };

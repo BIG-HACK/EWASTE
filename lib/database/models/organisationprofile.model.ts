@@ -1,7 +1,6 @@
 import { Schema, model, models } from "mongoose";
 
 const OrganisationProfileSchema = new Schema({
-    // USER INFO
     clerkId: { type: String, required: true, unique: false },
     name: { type: String, required: true },
     address: { type: String, required: true },

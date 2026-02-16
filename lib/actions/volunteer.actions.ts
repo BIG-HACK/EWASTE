@@ -7,6 +7,7 @@ import { connectToDatabase } from "@/lib/database";
 import Volunteer from "@/lib/database/models/volunteer.model";
 import VolunteerAssignment from "@/lib/database/models/volunteerAssignment.model";
 import Listing from "@/lib/database/models/listing.model";
+import { sendVolunteerApplicationNotification } from "@/lib/email/volunteer-notification";
 
 export async function submitVolunteerApplication(data: VolunteerApplicationParams) {
     try {
@@ -17,6 +18,7 @@ export async function submitVolunteerApplication(data: VolunteerApplicationParam
 
         const existing = await Volunteer.findOne({ clerkId: userId });
         if (existing) {
+            console.log("[Volunteer] Application already exists for this account (status: " + existing.status + "). No new email sent.");
             return JSON.parse(JSON.stringify(existing));
         }
 
@@ -28,6 +30,24 @@ export async function submitVolunteerApplication(data: VolunteerApplicationParam
             status,
             ...(status === "approved" ? { approvedAt: new Date() } : {}),
         });
+
+        if (status === "pending") {
+            try {
+                await sendVolunteerApplicationNotification({
+                    _id: volunteer._id.toString(),
+                    name: volunteer.name,
+                    age: volunteer.age,
+                    email: volunteer.email,
+                    phone: volunteer.phone,
+                    wantMeeting: volunteer.wantMeeting,
+                    availability: volunteer.availability,
+                    appliedAt: volunteer.appliedAt?.toISOString?.() ?? new Date().toISOString(),
+                });
+            } catch (emailError) {
+                console.error("[Volunteer] Notification email failed:", emailError);
+            }
+        }
+
         revalidatePath("/volunteer/apply");
         revalidatePath("/dashboard");
         return JSON.parse(JSON.stringify(volunteer));

@@ -41,6 +41,8 @@ declare type CreateListingParams = {
     assignedVolunteerId?: string;
     notes?: string;
     tags?: string[];
+    category?: string;
+    yearsUsed?: number;
 };
 
 declare type Listing = {
@@ -56,8 +58,18 @@ declare type Listing = {
     assignedVolunteerId?: string;
     notes?: string;
     tags?: string[];
+    category?: string;
+    yearsUsed?: number;
     createdAt?: string;
     updatedAt?: string;
+};
+
+declare type PublicListingsFilters = {
+    category?: string | string[];
+    condition?: "working" | "needs_repair" | "all";
+    yearsUsedMin?: number;
+    yearsUsedMax?: number;
+    sort?: "newest" | "oldest";
 };
 
 declare type CreateOrganisationProfileParams = {
@@ -119,6 +131,31 @@ declare type JourneyLog = {
     _id?: string;
     content: string;
     createdAt: string;
+};
+
+declare type OrganisationRegistrationParams = {
+    name: string;
+    email: string;
+    phone: string;
+    productTypes: string[];
+    aboutOrg: string;
+    identificationTag?: string;
+};
+
+declare type OrganisationRegistration = {
+    _id: string;
+    clerkId: string;
+    name: string;
+    email: string;
+    phone: string;
+    productTypes: string[];
+    aboutOrg: string;
+    identificationTag?: string;
+    status: "pending" | "confirmed" | "rejected";
+    submittedAt: string;
+    confirmedAt?: string;
+    createdAt?: string;
+    updatedAt?: string;
 };
 
 declare type VolunteerAssignment = {

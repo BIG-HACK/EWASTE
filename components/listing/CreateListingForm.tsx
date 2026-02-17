@@ -56,6 +56,8 @@ export function CreateListingForm() {
         needsRepair: false,
         notes: "",
         tags: "",
+        category: "",
+        yearsUsed: "",
     });
     const router = useRouter();
     const { user } = useUser();
@@ -89,6 +91,8 @@ export function CreateListingForm() {
                 needsRepair: formData.needsRepair,
                 notes: formData.notes || undefined,
                 tags: formData.tags ? formData.tags.split(",").map(tag => tag.trim()).filter(Boolean) : undefined,
+                category: formData.category.trim() || undefined,
+                yearsUsed: formData.yearsUsed ? parseInt(formData.yearsUsed, 10) : undefined,
             };
 
             const result = await createListing(listingData);
@@ -477,6 +481,45 @@ export function CreateListingForm() {
                                 value={formData.tags}
                                 onChange={handleChange}
                                 className="h-14 pl-4 text-base bg-gray-50/50 border-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all rounded-xl group-hover:bg-white"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Category & Years used (for public listing filters) */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div className="space-y-3 group">
+                            <Label htmlFor="category" className="text-base font-semibold text-gray-700">
+                                Category <span className="text-muted-foreground font-normal text-sm">(Optional)</span>
+                            </Label>
+                            <select
+                                id="category"
+                                name="category"
+                                value={formData.category}
+                                onChange={(e) => setFormData((p) => ({ ...p, category: e.target.value }))}
+                                className="h-14 w-full pl-4 text-base bg-gray-50/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500"
+                            >
+                                <option value="">Select category</option>
+                                <option value="Laptops">Laptops</option>
+                                <option value="Monitors">Monitors</option>
+                                <option value="Phones & Tablets">Phones & Tablets</option>
+                                <option value="Desktops & Components">Desktops & Components</option>
+                                <option value="Cables & Accessories">Cables & Accessories</option>
+                            </select>
+                        </div>
+                        <div className="space-y-3 group">
+                            <Label htmlFor="yearsUsed" className="text-base font-semibold text-gray-700">
+                                Years used <span className="text-muted-foreground font-normal text-sm">(Optional)</span>
+                            </Label>
+                            <Input
+                                id="yearsUsed"
+                                name="yearsUsed"
+                                type="number"
+                                min={0}
+                                max={50}
+                                placeholder="e.g. 3"
+                                value={formData.yearsUsed}
+                                onChange={handleChange}
+                                className="h-14 pl-4 text-base bg-gray-50/50 border-gray-200 focus:ring-2 focus:ring-emerald-500 rounded-xl"
                             />
                         </div>
                     </div>

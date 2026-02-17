@@ -24,22 +24,53 @@ declare global {
     }
 }
 
-export function CreateOrganisationProfileForm() {
+const CATEGORY_OPTIONS = [
+    "Laptops",
+    "Monitors",
+    "Phones & Tablets",
+    "Desktops & Components",
+    "Cables & Accessories",
+];
+
+export type CreateOrganisationProfileInitialData = {
+    name?: string;
+    email?: string;
+    phone?: string;
+    description?: string;
+};
+
+export function CreateOrganisationProfileForm({
+    initialData,
+}: {
+    initialData?: CreateOrganisationProfileInitialData;
+}) {
     const [isLoading, setIsLoading] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [formData, setFormData] = useState({
-        name: "",
+        name: initialData?.name ?? "",
         address: "",
-        phone: "",
-        email: "",
+        phone: initialData?.phone ?? "",
+        email: initialData?.email ?? "",
         website: "",
         logo: "",
-        description: "",
+        description: initialData?.description ?? "",
         needs: "",
         tags: "",
+        selectedCategories: [] as string[],
     });
     const router = useRouter();
     const { user } = useUser();
+
+    const toggleCategory = (cat: string) => {
+        setFormData((prev) => {
+            const next = prev.selectedCategories.includes(cat)
+                ? prev.selectedCategories.filter((c) => c !== cat)
+                : prev.selectedCategories.length < 3
+                  ? [...prev.selectedCategories, cat]
+                  : prev.selectedCategories;
+            return { ...prev, selectedCategories: next };
+        });
+    };
 
     // Load Cloudinary widget script
     useEffect(() => {
@@ -61,6 +92,13 @@ export function CreateOrganisationProfileForm() {
 
         setIsLoading(true);
         try {
+            const needsList =
+                formData.selectedCategories.length === 3
+                    ? formData.selectedCategories
+                    : formData.needs
+                      ? formData.needs.split(",").map((item) => item.trim()).filter(Boolean)
+                      : undefined;
+
             const profileData: CreateOrganisationProfileParams = {
                 clerkId: user.id,
                 name: formData.name,
@@ -70,12 +108,18 @@ export function CreateOrganisationProfileForm() {
                 website: formData.website,
                 logo: formData.logo,
                 description: formData.description,
-                needs: formData.needs ? formData.needs.split(",").map(item => item.trim()).filter(Boolean) : undefined,
+                needs: needsList?.length ? needsList : formData.needs ? formData.needs.split(",").map(item => item.trim()).filter(Boolean) : undefined,
                 tags: formData.tags ? formData.tags.split(",").map(tag => tag.trim()).filter(Boolean) : undefined,
             };
 
             await createOrganisationProfile(profileData);
-            router.push("/dashboard");
+            if (formData.selectedCategories.length === 3) {
+                const params = new URLSearchParams();
+                formData.selectedCategories.forEach((c) => params.append("category", c));
+                router.push(`/listings?${params.toString()}`);
+            } else {
+                router.push("/dashboard");
+            }
             router.refresh();
         } catch (error) {
             console.error("Error creating profile:", error);
@@ -266,6 +310,11 @@ export function CreateOrganisationProfileForm() {
                     {/* Description */}
                     <div className="space-y-2">
                         <Label htmlFor="description">About Your Organisation *</Label>
+                        {initialData?.description && (
+                            <p className="text-sm text-muted-foreground">
+                                We’ve pre-filled this from your registration. Use as your official description or edit below.
+                            </p>
+                        )}
                         <Textarea
                             id="description"
                             name="description"
@@ -277,20 +326,43 @@ export function CreateOrganisationProfileForm() {
                         />
                     </div>
 
-                    {/* Needs */}
+                    {/* Choose 3 of 5 categories */}
                     <div className="space-y-2">
-                        <Label htmlFor="needs">What E-Waste Do You Need? (Optional)</Label>
+                        <Label>What do you want to get? Choose 3 categories *</Label>
+                        <p className="text-sm text-muted-foreground">
+                            Select exactly 3 — we’ll show you listings that match.
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                            {CATEGORY_OPTIONS.map((cat) => (
+                                <Button
+                                    key={cat}
+                                    type="button"
+                                    variant={formData.selectedCategories.includes(cat) ? "default" : "outline"}
+                                    size="sm"
+                                    onClick={() => toggleCategory(cat)}
+                                >
+                                    {cat}
+                                </Button>
+                            ))}
+                        </div>
+                        {formData.selectedCategories.length > 0 && (
+                            <p className="text-xs text-muted-foreground">
+                                {formData.selectedCategories.length} of 3 selected
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Needs (fallback if not using 3 categories) */}
+                    <div className="space-y-2">
+                        <Label htmlFor="needs">Additional items (optional)</Label>
                         <Input
                             id="needs"
                             name="needs"
                             type="text"
-                            placeholder="e.g., laptops, monitors, phones (comma-separated)"
+                            placeholder="e.g., keyboards, mice (comma-separated)"
                             value={formData.needs}
                             onChange={handleChange}
                         />
-                        <p className="text-sm text-muted-foreground">
-                            Separate items with commas
-                        </p>
                     </div>
 
                     {/* Tags */}
@@ -312,15 +384,24 @@ export function CreateOrganisationProfileForm() {
                     {/* Submit Button */}
                     <Button
                         type="submit"
-                        disabled={isLoading || !formData.logo}
+                        disabled={
+                            isLoading ||
+                            !formData.logo ||
+                            formData.selectedCategories.length !== 3
+                        }
                         className="w-full"
                         size="lg"
                     >
-                        {isLoading ? "Creating profile..." : "Create Profile"}
+                        {isLoading ? "Creating profile..." : "Create Profile & view listings"}
                     </Button>
                     {!formData.logo && (
                         <p className="text-sm text-red-500 text-center">
                             Please upload a logo before submitting
+                        </p>
+                    )}
+                    {formData.selectedCategories.length !== 3 && (
+                        <p className="text-sm text-amber-600 text-center">
+                            Please select exactly 3 categories
                         </p>
                     )}
                 </form>

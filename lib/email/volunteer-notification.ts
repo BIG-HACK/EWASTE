@@ -1,10 +1,6 @@
-import { Resend } from "resend";
+import { sendMail, escapeHtml, isNodemailerConfigured } from "./nodemailer";
 
-// Default company inbox. Override with VOLUNTEER_NOTIFICATION_EMAIL for testing:
-// Resend only allows sending to your own email until you verify a domain (resend.com/domains).
 const COMPANY_EMAIL = process.env.VOLUNTEER_NOTIFICATION_EMAIL ?? "secondspark.tech@gmail.com";
-// Resend: use onboarding@resend.dev until you verify a domain; then set RESEND_FROM_EMAIL to e.g. noreply@yourdomain.com
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
 
 type VolunteerData = {
     _id: string;
@@ -18,13 +14,10 @@ type VolunteerData = {
 };
 
 export async function sendVolunteerApplicationNotification(volunteer: VolunteerData) {
-    const apiKey = process.env.RESEND_API_KEY;
-    if (!apiKey || apiKey.trim() === "") {
-        console.warn("[Resend] RESEND_API_KEY not set; skipping volunteer notification email");
+    if (!isNodemailerConfigured()) {
+        console.warn("[Nodemailer] SMTP not configured; skipping volunteer notification email");
         return;
     }
-
-    const resend = new Resend(apiKey);
 
     const baseUrl =
         process.env.NEXT_PUBLIC_APP_URL ||
@@ -60,7 +53,7 @@ export async function sendVolunteerApplicationNotification(volunteer: VolunteerD
   <p style="margin: 20px 0;">
     <a href="${approveLink}" style="display: inline-block; background: #059669; color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600;">Approve volunteer</a>
   </p>
-  <p style="font-size: 0.875rem; color: #666;">If the button doesn’t work, copy and paste this link into your browser:</p>
+  <p style="font-size: 0.875rem; color: #666;">If the button doesn't work, copy and paste this link into your browser:</p>
   <p style="font-size: 0.875rem; word-break: break-all;">${approveLink}</p>
 
   <p style="margin-top: 32px; font-size: 0.875rem; color: #666;">— SecondSpark</p>
@@ -68,27 +61,11 @@ export async function sendVolunteerApplicationNotification(volunteer: VolunteerD
 </html>
 `.trim();
 
-    const toEmail = COMPANY_EMAIL;
-    console.log("[Resend] Sending volunteer notification to", toEmail, "for", volunteer.name);
+    console.log("[Nodemailer] Sending volunteer notification to", COMPANY_EMAIL, "for", volunteer.name);
 
-    const { data, error } = await resend.emails.send({
-        from: FROM_EMAIL,
-        to: [toEmail],
+    await sendMail({
+        to: COMPANY_EMAIL,
         subject: `New volunteer application: ${volunteer.name}`,
         html,
     });
-
-    if (error) {
-        console.error("[Resend] Failed to send volunteer notification email:", JSON.stringify(error, null, 2));
-        throw new Error("Failed to send notification email");
-    }
-    console.log("[Resend] Email sent successfully. Id:", data?.id);
-}
-
-function escapeHtml(s: string): string {
-    return s
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
 }

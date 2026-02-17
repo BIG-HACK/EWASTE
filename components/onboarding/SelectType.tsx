@@ -30,6 +30,8 @@ export function SelectType() {
             await user?.reload();
             if (selectedType === "volunteer") {
                 router.push("/volunteer/apply");
+            } else if (selectedType === "organisation") {
+                router.push("/organisation/register");
             } else {
                 router.push("/");
             }

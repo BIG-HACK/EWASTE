@@ -20,6 +20,10 @@ const navItemsDonor = [
         href: "/create-listing",
     },
     {
+        label: "Listings",
+        href: "/listings",
+    },
+    {
         label: "Organisations",
         href: "/organisations",
     }
@@ -37,6 +41,10 @@ const navItemsOrganisation = [
     {
         label: "Dashboard",
         href: "/dashboard",
+    },
+    {
+        label: "Listings",
+        href: "/listings",
     },
     {
         label: "Organisations",

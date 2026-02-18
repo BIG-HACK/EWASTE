@@ -1,14 +1,18 @@
 import { Schema, model, models } from "mongoose";
 
 const UserSchema = new Schema({
-    // USER INFO
-    clerkId: { type: String, required: true, unique: true },
-    email: { type: String, required: true, unique: true },
-    username: { type: String, required: true, unique: true },
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
-    photo: { type: String, required: true },
-    userType: { type: String, enum: ["donor", "organisation"], default: null }
+  // USER INFO
+  clerkId: { type: String, required: true, unique: true },
+  email: { type: String, required: true, unique: true },
+  username: { type: String, required: true, unique: true },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
+  photo: { type: String, required: true },
+  userType: {
+    type: String,
+    enum: ["donor", "organisation", "student"],
+    default: null,
+  },
 });
 
 const User = models.User || model("User", UserSchema);

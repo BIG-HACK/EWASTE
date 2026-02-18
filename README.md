@@ -37,15 +37,20 @@ MONGODB_URI=your_mongodb_connection_string
 # Cloudinary Image Upload
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
 NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=your_upload_preset
+
+# Optional: Mapbox (only if you use Mapbox for the student journey map instead of Leaflet+OSM)
+# NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=your_mapbox_public_token
 ```
 
 ### Setting up Cloudinary for Image Uploads
 
+See **[docs/CLOUDINARY-SETUP.md](docs/CLOUDINARY-SETUP.md)** for step-by-step instructions. Summary:
+
 1. Sign up for a free account at [Cloudinary](https://cloudinary.com)
 2. Go to your dashboard and copy your **Cloud Name**
 3. Navigate to **Settings** > **Upload** > **Upload presets**
-4. Either use the default preset (`ml_default`) or create a new **unsigned** upload preset
-5. Add the Cloud Name and Upload Preset to your `.env.local` file
+4. Create a new **unsigned** upload preset (required for client-side uploads)
+5. Add the Cloud Name and Upload Preset to your `.env` or `.env.local` file
 
 The image upload feature uses Cloudinary to store user-uploaded images. Images are uploaded directly to Cloudinary, and the URLs are stored in MongoDB.
 

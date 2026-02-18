@@ -98,7 +98,8 @@ export async function getPublicListings(filters?: PublicListingsFilters) {
             if (filters.yearsUsedMax != null) (query.yearsUsed as Record<string, number>).$lte = filters.yearsUsedMax;
         }
 
-        const sort = filters?.sort === "oldest" ? { createdAt: 1 } : { createdAt: -1 };
+        const sort: { createdAt: 1 | -1 } =
+            filters?.sort === "oldest" ? { createdAt: 1 } : { createdAt: -1 };
         const listings = await Listing.find(query).sort(sort).lean();
         return JSON.parse(JSON.stringify(listings));
     } catch (error) {

@@ -20,6 +20,10 @@ const navItemsDonor = [
         href: "/create-listing",
     },
     {
+        label: "Listings",
+        href: "/listings",
+    },
+    {
         label: "Organisations",
         href: "/organisations",
     }
@@ -39,9 +43,36 @@ const navItemsOrganisation = [
         href: "/dashboard",
     },
     {
+        label: "Listings",
+        href: "/listings",
+    },
+    {
         label: "Organisations",
         href: "/organisations",
     }
+];
+
+const navItemsVolunteer = [
+    {
+        label: "Home",
+        href: "/",
+    },
+    {
+        label: "Dashboard",
+        href: "/dashboard",
+    },
+    {
+        label: "Apply",
+        href: "/volunteer/apply",
+    },
+    {
+        label: "Browse Listings",
+        href: "/volunteer/listings",
+    },
+    {
+        label: "Portfolio",
+        href: "/volunteer/portfolio",
+    },
 ];
 
 const dummyOrganisations: OrganisationProfile[] = [
@@ -283,4 +314,4 @@ const dummyMatches: Listing[] = [
     }
 ];
 
-export { navItemsDonor, navItemsOrganisation, dummyOrganisations, dummyMatches };
+export { navItemsDonor, navItemsOrganisation, navItemsVolunteer, dummyOrganisations, dummyMatches };

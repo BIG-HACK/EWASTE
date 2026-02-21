@@ -78,21 +78,33 @@ export async function setUserType(userType: UserType) {
             throw new Error("Unauthorized");
         }
 
+        const client = await clerkClient();
         await connectToDatabase();
 
-        // Update user in database
-        const updatedUser = await User.findOneAndUpdate(
+        // Update user in database (or create if missing, e.g. when webhook hasn't run yet)
+        let updatedUser = await User.findOneAndUpdate(
             { clerkId: userId },
             { userType },
             { new: true }
         );
 
         if (!updatedUser) {
-            throw new Error("User not found");
+            // User document doesn't exist yet (common in local dev without webhook) — create it from Clerk
+            const clerkUser = await client.users.getUser(userId);
+            const email = clerkUser.emailAddresses.find((e) => e.id === clerkUser.primaryEmailAddressId)?.emailAddress ?? clerkUser.emailAddresses[0]?.emailAddress ?? "";
+            const newUser = await User.create({
+                clerkId: userId,
+                email: email || `user-${userId}@placeholder.local`,
+                username: clerkUser.username ?? clerkUser.firstName ?? `user_${userId.slice(-8)}`,
+                firstName: clerkUser.firstName ?? "",
+                lastName: clerkUser.lastName ?? "",
+                photo: clerkUser.imageUrl ?? "",
+                userType,
+            });
+            updatedUser = newUser;
         }
 
         // Update Clerk user metadata so middleware can access it
-        const client = await clerkClient();
         await client.users.updateUserMetadata(userId, {
             publicMetadata: {
                 userType

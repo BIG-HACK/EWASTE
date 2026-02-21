@@ -75,6 +75,39 @@ export async function updateListing(listingId: string, listing: Partial<CreateLi
     }
 }
 
+export async function getPublicListings(filters?: PublicListingsFilters) {
+    try {
+        await connectToDatabase();
+
+        const query: Record<string, unknown> = { resolved: false };
+
+        if (filters?.category) {
+            const categories = Array.isArray(filters.category) ? filters.category : [filters.category];
+            if (categories.length > 0) {
+                query.$or = [
+                    { category: { $in: categories } },
+                    { tags: { $in: categories } },
+                ];
+            }
+        }
+        if (filters?.condition === "working") query.needsRepair = false;
+        if (filters?.condition === "needs_repair") query.needsRepair = true;
+        if (filters?.yearsUsedMin != null || filters?.yearsUsedMax != null) {
+            query.yearsUsed = {};
+            if (filters.yearsUsedMin != null) (query.yearsUsed as Record<string, number>).$gte = filters.yearsUsedMin;
+            if (filters.yearsUsedMax != null) (query.yearsUsed as Record<string, number>).$lte = filters.yearsUsedMax;
+        }
+
+        const sort: { createdAt: 1 | -1 } =
+            filters?.sort === "oldest" ? { createdAt: 1 } : { createdAt: -1 };
+        const listings = await Listing.find(query).sort(sort).lean();
+        return JSON.parse(JSON.stringify(listings));
+    } catch (error) {
+        console.error("Error getting public listings:", error);
+        return [];
+    }
+}
+
 export async function matchListingWithOrganisation(listingId: string, organisationClerkId: string) {
     try {
         await connectToDatabase();

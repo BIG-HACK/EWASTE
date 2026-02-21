@@ -37,7 +37,26 @@ MONGODB_URI=your_mongodb_connection_string
 # Cloudinary Image Upload
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
 NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=your_upload_preset
+
+# Optional: set to "true" to auto-approve volunteer applications (for development)
+# AUTO_APPROVE_VOLUNTEERS=true
+
+# Volunteer application notifications (email to secondspark.tech@gmail.com)
+RESEND_API_KEY=your_resend_api_key
+APPROVE_VOLUNTEER_SECRET=your_secret_string_for_approve_links
+# Optional: "From" address (default: SecondSpark <onboarding@resend.dev>)
+# RESEND_FROM_EMAIL=SecondSpark <noreply@yourdomain.com>
+# Optional: app URL for approve links (Vercel sets VERCEL_URL automatically)
+# NEXT_PUBLIC_APP_URL=https://your-app.vercel.app
 ```
+
+### Volunteer verification emails
+
+1. Sign up at [Resend](https://resend.com) and create an API key.
+2. Add `RESEND_API_KEY` and `APPROVE_VOLUNTEER_SECRET` (any long random string) to your env.
+3. **Resend restriction:** Without a verified domain, Resend only allows sending to the email address of your Resend account. For testing, set `VOLUNTEER_NOTIFICATION_EMAIL` to that address (e.g. `VOLUNTEER_NOTIFICATION_EMAIL=your@email.com`). Emails will go there and the approve link will still work.
+4. **Production:** Verify a domain at [resend.com/domains](https://resend.com/domains), then set `RESEND_FROM_EMAIL` to an address on that domain (e.g. `noreply@secondspark.tech`). After that you can send to any recipient; leave `VOLUNTEER_NOTIFICATION_EMAIL` unset to use the default **secondspark.tech@gmail.com**.
+5. When a volunteer applies, an email is sent with their details and an "Approve volunteer" link. Clicking the link (with the correct secret) approves them so they can start picking up listings.
 
 ### Setting up Cloudinary for Image Uploads
 
